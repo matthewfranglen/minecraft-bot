@@ -4,8 +4,11 @@
   "description": "Minecraft Bot",
   "main": "app.js",
   "dependencies": {
+    "minecraft-data": "^0.17.0",
     "mineflayer": "^1.6.0",
-    "mineflayer-navigate": "0.0.9"
+    "mineflayer-navigate": "0.0.9",
+    "prismarine-biome": "^0.1.0",
+    "prismarine-block": "^0.1.0"
   },
   "devDependencies": {},
   "scripts": {
