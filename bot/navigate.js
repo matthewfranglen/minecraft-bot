@@ -8,27 +8,27 @@ exports.install = function (bot) {
   navigatePlugin(bot);
 };
 
-exports.walkTo = function (bot, point, callback, errorCallback) {
-  bot.navigate.once('pathFound', function (path) {
-    console.log('navigate: found path. I can get there in ' + path.length + ' moves.');
-    bot.navigate.walk(path);
-  });
-  bot.navigate.once('cannotFind', function (path) {
-    console.log('navigate: found partial path. I can get there in ' + path.length + ' moves.');
+// This walks to the point provided.
+// This must be called with a this value of the bot.
+// The point must be a vec3 or an array of x, y, z
+// This calls the callback with a string indicating status:
+//   arrived: walked to within 1 square of the point
+//   obstructed: walked but coult not reach point
+//   interrupted: walking was interrupted
+//   timeout: path search timed out
+//   tooFar: distance to point too far
+exports.walkTo = function (point, callback) {
+  console.log("walking to " + point);
+  var bot = this;
 
-    if (path.length < 2) {
-      callback();
-    }
-    else {
-      bot.navigate.walk(path);
-    }
-  });
-  bot.navigate.once('arrived', function () {
-    callback();
-  });
-  bot.navigate.once('stop', function() {
-    errorCallback("Cannot complete path");
-  });
-
-  bot.navigate.to(point);
+  var search = bot.navigate.findPathSync(point, { endRadius: 1 });
+  if (search.length <= 1) {
+    callback('success');
+  }
+  else if (search.status === 'success' || search.status === 'noPath') {
+    bot.navigate.walk(search.path, callback);
+  }
+  else {
+    callback(search.status);
+  }
 };
