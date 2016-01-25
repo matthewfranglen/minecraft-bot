@@ -4,7 +4,8 @@
   "description": "Minecraft Bot",
   "main": "index.js",
   "dependencies": {
-    "mineflayer": "^1.6.0"
+    "mineflayer": "^1.6.0",
+    "mineflayer-navigate": "0.0.9"
   },
   "devDependencies": {},
   "scripts": {

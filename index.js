@@ -20,7 +20,12 @@ var repl = require('repl');
 
 // create and connect the bot
 var mineflayer = require('mineflayer');
-var bot = mineflayer.createBot({ username: 'REPL' });
+var bot = mineflayer.createBot({
+    host: 'minecraft.nea.me',
+    port: 25565,
+    username: '',
+    password: ''
+});
 bot.on('chat', function(username, message) {
   console.log(username+' says: '+message);
 });
