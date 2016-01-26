@@ -16,6 +16,7 @@ const DIG_RANGE = 5;
 //   missing: no block at point
 //   interrupted: digging interrupted
 exports.digBlock = function (point) {
+  console.log("Digging the point: " + point);
   var bot = this;
   var block = bot.blockAt(point);
   bot.chat('Digging at ' + point);

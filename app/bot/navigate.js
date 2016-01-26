@@ -22,6 +22,7 @@ exports.install = function (bot) {
 exports.walkTo = function (point) {
   var bot = this;
   bot.chat("Walking from " + bot.entity.position + " to " + point);
+  bot.navigate.stop();
 
   var promise = new Promise(function (resolve, reject) {
     clearListeners(bot);

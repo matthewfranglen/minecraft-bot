@@ -1,7 +1,11 @@
 /* jshint esnext: true */
 
+var mineflayer = require('mineflayer');
+
+var chatLib = require('./chat.js');
 var digLib = require('./dig.js');
 var navigateLib = require('./navigate.js');
+var navigatePlugin = require('mineflayer-navigate')(mineflayer);
 
 exports.createBot = function (name) {
   var bot = mineflayer.createBot({
@@ -14,20 +18,28 @@ exports.createBot = function (name) {
   bot.on('kicked', onKick);
 
   navigatePlugin(bot);
-  simple.install(bot);
+  // simple.install(bot);
 
-  var dig = digLib.dig.bind(bot);
+  var dig = digLib.digBlock.bind(bot);
   var walk = navigateLib.walkTo.bind(bot);
 
-  return {
+  var botWrapper = {
     bot: bot,
 
     dig: {
       point: dig,
       offset: function (direction, offset) {
+        if (isInvalidDirection(direction)) {
+          return Promise.reject("Unrecognized direction " + direction);
+        }
+
         return dig(offsetToPoint(bot, direction, offset));
       },
       shape: function (direction, shape) {
+        if (isInvalidDirection(direction)) {
+          return Promise.reject("Unrecognized direction " + direction);
+        }
+
         return shapeTracer(bot, direction, shape, dig);
       }
     },
@@ -35,22 +47,51 @@ exports.createBot = function (name) {
     move: {
       point: walk,
       offset: function (direction, offset) {
+        if (isInvalidDirection(direction)) {
+          return Promise.reject("Unrecognized direction " + direction);
+        }
+
         return walk(offsetToPoint(bot, direction, offset));
       }
+    },
+
+    look: function (direction) {
+      if (isInvalidDirection(direction)) {
+        return Promise.reject("Unrecognized direction " + direction);
+      }
+
+      switch (direction) {
+        case 'north':
+        case 'south':
+        case 'east':
+        case 'west':
+          var point = offsetToPoint(bot, direction, [1, 0, 1.5]);
+          console.log("Looking at " + point);
+          bot.lookAt(point);
+          break;
+        case 'up':
+        case 'down':
+          bot.lookAt(offsetToPoint(bot, direction, [1, 0, 0]));
+          break;
+      }
     }
+
   };
+  chatLib.enableChatCommands(botWrapper);
+
+  return botWrapper;
 };
 
 var directionMatricies = {
-  north: [[ 0,  0,  1],
-          [ 1,  0,  0],
-          [ 0,  1,  0]],
-  south: [[ 0,  0, -1],
-          [-1,  0,  0],
-          [ 0,  1,  0]],
+  north: [[ 0,  1,  0],
+          [ 0,  0,  1],
+          [ 1,  0,  0]],
+  south: [[ 0, -1,  0],
+          [ 0,  0,  1],
+          [-1,  0,  0]],
   east:  [[-1,  0,  0],
-          [ 0,  0, -1],
-          [ 0,  1,  0]],
+          [ 0,  0,  1],
+          [ 0, -1,  0]],
   west:  [[ 1,  0,  0],
           [ 0,  0,  1],
           [ 0,  1,  0]],
@@ -62,8 +103,12 @@ var directionMatricies = {
           [ 1,  0,  0]]
 };
 
+var isInvalidDirection = function (direction) {
+  return ! (direction in directionMatricies);
+};
+
 var offsetToPoint = function (bot, direction, offset) {
-  return bot.entity.position.offset(offsetToCardinal(direction, offset));
+  return bot.entity.position.offset.apply(bot.entity.position, offsetToCardinal(direction, offset));
 };
 
 var offsetToCardinal = function (direction, offset) {
