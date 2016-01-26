@@ -26,17 +26,25 @@ var start = function () {
 
     return count < 10;
   };
-  var callback = function (result) {
-    console.log("Digging of logs was " + result.status);
-    if (result.blocks) {
-      console.log("Dug: " + result.blocks);
-    }
-    bot.quit("quitting");
-  };
 
   var digUntil = behave.digUntil.bind(bot);
-  digUntil("log", condition, callback);
+  digUntil("log", condition).then(function (result) {
+    console.log("Digging of logs was successful");
+    console.log("Dug " + result.blocks.length + " logs");
+    bot.quit("quitting");
+  },
+  function (result) {
+    console.log("Digging of logs was unsuccessful: " + result);
+    bot.quit("quitting");
+  });
 };
+
+bot.on('end', function () {
+  console.log('I have been disconnected');
+});
+bot.on('kicked', function (reason, loggedIn) {
+  console.log('I was kicked for ' + reason);
+});
 
 bot.once('spawn', function() {
   console.log(bot.username + ' logged in.');

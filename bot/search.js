@@ -12,36 +12,45 @@ exports.install = function (bot) {
 // This finds points with the block provided.
 // This must be called with a this value of the bot.
 // The block name must be an entry in mcData.blocksByName
-// This calls the callback with an object with the following fields:
+// This returns a promise which is completed with the following values:
 // status:
 //   success: found all requested blocks
 //   partial: found some requested blocks
-//   none: found no requested blocks
-//   missing: no such block
 // blocks:
 //   The list of block points.
 //   This is always present, but only has values for success and partial statuses.
-exports.findBlock = function (name, callback, count) {
+//
+// If the search was unsuccessful the error will be:
+//   none: found no requested blocks
+//   missing: no such block
+exports.findBlock = function (name, count) {
   var bot = this;
-  var block = mcData.blocksByName[name];
+  bot.chat('Looking for ' + name);
 
-  if (! block) {
-    callback({ status: 'missing', blocks: [] });
-    return;
-  }
+  var promise = new Promise(function (resolve, reject) {
+    var block = mcData.blocksByName[name];
 
-  var points = bot.findBlockSync({
-    point: bot.entity.position,
-    matching: block.id,
-    count: count || 1
+    if (! block) {
+      reject('missing');
+      return;
+    }
+
+    var points = bot.findBlockSync({
+      point: bot.entity.position,
+      matching: block.id,
+      count: count || 1
+    });
+
+    if (points.length >= count) {
+      resolve({ 'status': 'success', 'blocks': points.map(p => p.position) });
+    }
+    else if (points.length) {
+      resolve({ 'status': 'partial', 'blocks': points.map(p => p.position) });
+    }
+    else {
+      reject('none');
+    }
   });
-  if (points.length >= count) {
-    callback({ 'status': 'success', 'blocks': points.map(p => p.position) });
-  }
-  else if (points.length) {
-    callback({ 'status': 'partial', 'blocks': points.map(p => p.position) });
-  }
-  else {
-    callback({ 'status': 'none', 'blocks': [] });
-  }
+
+  return promise;
 };

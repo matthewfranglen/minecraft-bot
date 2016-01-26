@@ -12,108 +12,79 @@ var navigate = require("./navigate.js");
 // This digs blocks until the condition is reached or it cannot dig any more
 // This must be called with a this value of the bot.
 // The block name must be an entry in mcData.blocksByName
-// This calls the callback with an object with the following fields:
+//
+// This returns a promise which is completed with the following values:
 // status:
 //   success: dug all requested blocks
 //   partial: dug some requested blocks
-//   none: dug no requested blocks
-//   missing: no such block
 // blocks:
 //   The list of block points.
-//   This is always present, but only has values for success and partial statuses.
-exports.digUntil = function (name, condition, callback) {
+//
+// If the search and dig was unsuccessful the error will be:
+//   none: dug no requested blocks
+//   missing: no such block
+exports.digUntil = function (name, condition) {
   console.log("Mining " + name + " until condition reached");
 
   var bot = this;
-  var findBlock = search.findBlock.bind(bot);
-  var walkTo = navigate.walkTo.bind(bot);
-  var digBlock = dig.digBlock.bind(bot);
-
   var blocks = [];
 
-  var rePerform = function () {
-    if (! condition()) {
-      complete();
-      return;
-    }
-
-    perform(1, 10);
+  var methods = {
+    findBlock: search.findBlock.bind(bot),
+    walkTo: navigate.walkTo.bind(bot),
+    digBlock: dig.digBlock.bind(bot),
+    pushBlock: blocks.push.bind(blocks)
   };
 
-  var perform = function (count, limit) {
-    console.log("Starting loop " + count + ", " + limit);
-
-    var findCallback = function (result) {
-      console.log("Find callback " + result.status + ", " + result.blocks);
-      if (result.status === 'success') {
-        digFirstAccessiblePoint(result.blocks, result.blocks.length - 1, function (point) {
-          if (count > limit) {
-            complete();
-            return;
-          }
-          if (! point) {
-            perform(count + 1, limit);
-            return;
-          }
-
-          blocks.push(point);
-        });
-      }
-      else if (result.status === 'partial') {
-        digFirstAccessiblePoint(result.blocks, 0, function (point) {
-          if (! point) {
-            complete();
-            return;
-          }
-
-          blocks.push(point);
-        });
+  var promise = new Promise(function (resolve, reject) {
+    var success = function () {
+      resolve({ 'status': 'success', 'blocks': blocks });
+    };
+    var failure = function () {
+      if (blocks) {
+        resolve({ 'status': 'partial', 'blocks': blocks });
       }
       else {
-        complete();
+        reject('none');
       }
     };
 
-    var digFirstAccessiblePoint = function (points, index, callback) {
-      console.log('walk and dig ' + points.length + ", " + index);
-      if (index >= points.length) {
-        callback();
-        return;
-      }
+    iterator(name, condition, methods).then(success, failure);
+  });
 
-      walkTo(points[index], function (result) {
-        console.log('walk callback ' + result);
-        if (result.status === 'timeout' || result.status === 'tooFar') {
-          callback();
-          return;
-        }
+  return promise;
+};
 
-        digBlock(points[index], function (result) {
-          console.log('dig callback ' + result.status);
-          if (result.status === 'success') {
-            callback(points[index]);
-            return;
-          }
+var iterate = function (name, methods) {
+  return methods.findBlock(name, 10).then(function (search) {
+    var lastPromise = Promise.resolve(undefined);
 
-          digFirstAccessiblePoint(points, index + 1, callback);
-        });
-      });
-    };
+    search.blocks.forEach(function (point) {
+      var walkAndDig = function () {
+        var promise = methods.walkTo(point).then(methods.digBlock);
+        promise.then(methods.appendBlock);
 
-    findBlock(name, findCallback, count);
-  };
+        return promise;
+      };
 
-  var complete = function (success) {
-    if (success) {
-      callback({ 'status': 'success', 'blocks': blocks });
+      lastPromise = lastPromise.then(walkAndDig, walkAndDig);
+    });
+
+    return lastPromise;
+  });
+};
+
+var iterator = function (name, condition, methods) {
+  var promise = iterate(name, methods);
+
+  return promise.then(function () {
+    if (condition()) {
+      return iterator(name, condition, methods);
     }
-    else if (blocks) {
-      callback({ 'status': 'partial', 'blocks': blocks });
-    }
-    else {
-      callback({ 'status': 'none', 'blocks': blocks });
-    }
-  };
+    return true;
+  }, function (error) {
+    console.log("Failed to dig " + name + ": " + error);
 
-  perform(1, 10);
+    return false;
+  });
 };
