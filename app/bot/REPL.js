@@ -12,7 +12,7 @@ exports.enableRepl = function (bot, mineflayer) {
     console.log(bot.username+' logged in.');
   });
 
-  enableNavigation(bot);
+  enableNavigation(bot, mineflayer);
 
   // create repl interface
   var historyFile = path.join(os.tmpDir(), 'bot_repl_history.json');
@@ -37,7 +37,7 @@ exports.enableRepl = function (bot, mineflayer) {
 };
 
 // optional navigation support
-function enableNavigation (bot, mineflayer) {
+var enableNavigation = function (bot, mineflayer) {
   try {
     var navigatePlugin = require('mineflayer-navigate')(mineflayer);
     navigatePlugin(bot);
@@ -58,4 +58,4 @@ function enableNavigation (bot, mineflayer) {
   } catch(err) {
     console.log('Info: Optional mineflayer-navigate module not installed, so no navigation support.');
   }
-}
+};
