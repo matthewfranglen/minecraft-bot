@@ -5,6 +5,7 @@ var mineflayer = require('mineflayer');
 var chatLib = require('./chat.js');
 var digLib = require('./dig.js');
 var navigateLib = require('./navigate.js');
+var tossLib = require('./toss.js');
 var navigatePlugin = require('mineflayer-navigate')(mineflayer);
 
 exports.createBot = function (name) {
@@ -18,10 +19,10 @@ exports.createBot = function (name) {
   bot.on('kicked', onKick);
 
   navigatePlugin(bot);
-  // simple.install(bot);
 
   var dig = digLib.digBlock.bind(bot);
   var walk = navigateLib.walkTo.bind(bot);
+  var toss = tossLib.tossAll.bind(bot);
 
   var botWrapper = {
     bot: bot,
@@ -74,8 +75,9 @@ exports.createBot = function (name) {
           bot.lookAt(offsetToPoint(bot, direction, [3, 0, 0]));
           break;
       }
-    }
+    },
 
+    toss: toss
   };
   chatLib.enableChatCommands(botWrapper);
 
@@ -125,9 +127,10 @@ var shapeTracer = function (bot, direction, shape, f) {
     }
 
     var point = offsetToPoint(bot, direction, offset);
-    return f(point).then(function () {
+    var recur = function () {
       return trace(shape);
-    });
+    };
+    return f(point).then(recur, recur);
   };
 
   return trace(shape.slice());

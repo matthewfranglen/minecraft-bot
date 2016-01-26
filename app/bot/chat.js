@@ -26,8 +26,13 @@ exports.enableChatCommands = function (bot) {
 };
 
 var isNotForMe = function (bot, messageParts) {
-  var pattern = new RegExp(messageParts[0]);
-  return ! bot.bot.username.match(pattern);
+  try {
+    var pattern = new RegExp(messageParts[0]);
+    return ! bot.bot.username.match(pattern);
+  }
+  catch (exception) {
+    return true;
+  }
 };
 
 var shapes = {};
@@ -57,14 +62,17 @@ var commands = {
   },
   move: function (bot, command) {
     var direction = command.args[0],
-      distance = command.args[1] || 1;
+      distance = parseInt(command.args[1]) || 1;
 
-    bot.move.offset([distance, 0, 0]);
+    bot.move.offset(direction, [distance + 1, 0, 0]);
   },
   come: function (bot, command) {
     bot.move.point(bot.bot.players[command.from].entity.position);
   },
   look: function (bot, command) {
     bot.look(command.args[0]);
+  },
+  toss: function (bot) {
+    bot.toss();
   }
 };
