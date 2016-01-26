@@ -28,12 +28,127 @@ exports.install = function (bot) {
     }
   };
 
-  bot.on('chat', function (username, message) {
-    if (message === 'come') {
-      bot.navigate.to(bot.players[username].entity.position);
+  blocks = [[1, 2, -1], [1, 2, 0], [1, 2, 1], [1, 1, -1], [1, 1, 0], [1, 1, 1], [1, 0, -1], [1, 0, 0], [1, 0, 1]];
+
+  var directions = {
+    north: {
+      walk: [0, 0, 1],
+      blocks: []
+    },
+    east: {
+      walk: [-1, 0, 0],
+      blocks: []
+    },
+    south: {
+      walk: [0, 0, -1],
+      blocks: []
+    },
+    west: {
+      walk: [1, 0, 0],
+      blocks: []
     }
-    else if (message === 'toss') {
+  };
+
+  var repeat = function (f, count) {
+    if (count > 0) {
+      f(function () { repeat(f, count - 1); });
+    }
+  };
+
+  // x, y, z: x and z are horizontal and y is vertical
+  // x is left and right and z is forward and backward
+  // north: z + 1
+  // east: x - 1
+  // south: z - 1
+  // west: x + 1
+  // This makes up 3x3 square templates in each direction for mining.
+  // A given direction is fixed in the major direction, varies from -1 to 1 in the minor direction, and varies from 0 to 2 in yshapes.
+  for (y = 0; y < 3; y++) {
+    for (minor = -1; minor <= 1; minor++) {
+      directions.north.blocks.push([minor, y, 1]);
+      directions.east.blocks.push([-1, y, minor]);
+      directions.south.blocks.push([minor, y, -1]);
+      directions.west.blocks.push([1, y, minor]);
+    }
+  }
+
+  var commandPattern = new RegExp('^([^ ]+) ([^ ]+)(?: (.+))?$');
+  var NAME_INDEX = 1;
+  var COMMAND_INDEX = 2;
+  var ARGUMENTS_INDEX = 3;
+
+  var commands = {
+    come: function (cmd) {
+      bot.chat("Coming...");
+      bot.navigate.to(bot.players[cmd.from].entity.position);
+    },
+    toss: function () {
+      bot.chat("Tossing...");
       tossAll(bot, function () {});
+    },
+    dig: function (cmd) {
+      var direction = cmd.args[0];
+      var count = cmd.args[1] || 1;
+
+      if (! (direction in directions)) {
+        bot.chat("Unknown direction " + direction);
+        return;
+      }
+      bot.chat("Digging...");
+
+      var current = directions[direction];
+      var digBlocks = function (callback) {
+        digAll(bot, current.blocks, function () { walkForward(callback); });
+      };
+      var walkForward = function (callback) {
+        moveTo(bot, current.walk[0], current.walk[1], current.walk[2], callback);
+      };
+
+      repeat(digBlocks, count);
+    },
+    look: function (cmd) {
+      var direction = cmd.args[0];
+      if (! (direction in directions)) {
+        bot.chat("Unknown direction " + direction);
+        return;
+      }
+      bot.chat("Looking...");
+
+      var current = directions[direction];
+      lookAt(bot, current.walk[0], current.walk[1] + 1.5, current.walk[2]);
+    }
+  };
+  bot.on('chat', function (username, message) {
+    if (username === bot.username) {
+      return;
+    }
+
+    var match = message.match(commandPattern);
+    var args;
+    if (! match) {
+      return;
+    }
+    if (match[ARGUMENTS_INDEX]) {
+      args = match[ARGUMENTS_INDEX].split(' ');
+    }
+    else {
+      args = [];
+    }
+
+    var cmd = {
+      from: username,
+      to: match[NAME_INDEX],
+      command: match[COMMAND_INDEX],
+      args: args
+    };
+
+    if (cmd.to === bot.username) {
+      if (cmd.command in commands) {
+        commands[cmd.command](cmd);
+      }
+      else {
+        bot.chat("Unknown command " + cmd.command);
+      }
     }
   });
 
