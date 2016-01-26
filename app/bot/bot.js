@@ -71,7 +71,7 @@ exports.createBot = function (name) {
           break;
         case 'up':
         case 'down':
-          bot.lookAt(offsetToPoint(bot, direction, [1, 0, 0]));
+          bot.lookAt(offsetToPoint(bot, direction, [3, 0, 0]));
           break;
       }
     }
@@ -96,11 +96,11 @@ var directionMatricies = {
           [ 0,  0,  1],
           [ 0,  1,  0]],
   up:    [[ 0,  1,  0],
-          [ 0,  0,  1],
-          [ 1,  0,  0]],
-  down:  [[ 0, -1,  0],
-          [ 0,  0,  1],
-          [ 1,  0,  0]]
+          [ 1,  0,  0],
+          [ 0,  0,  1]],
+  down:  [[ 0,  1,  0],
+          [-1,  0,  0],
+          [ 0,  0,  1]]
 };
 
 var isInvalidDirection = function (direction) {
