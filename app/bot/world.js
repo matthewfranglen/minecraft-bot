@@ -26,7 +26,7 @@ exports.isInvalidDirection = function (direction) {
 };
 
 exports.offsetToPoint = function (bot, direction, offset) {
-  return bot.entity.position.offset.apply(bot.entity.position, offsetToCardinal(direction, offset));
+  return bot.entity.position.offset.apply(bot.entity.position, exports.offsetToCardinal(direction, offset));
 };
 
 exports.offsetToCardinal = function (direction, offset) {

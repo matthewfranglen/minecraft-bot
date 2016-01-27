@@ -3,6 +3,7 @@
 
 var mineflayer = require('mineflayer');
 var navigatePlugin = require('mineflayer-navigate')(mineflayer);
+var worldLib = require('./world.js');
 
 exports.install = function (bot) {
   navigatePlugin(bot);
@@ -19,8 +20,7 @@ exports.install = function (bot) {
 // If the walk was unsuccessful the error will be:
 //   timeout: path search timed out
 //   tooFar: distance to point too far
-exports.walkToPoint = function (point) {
-  var bot = this;
+var walkToPoint = function (bot, point) {
   bot.chat("Walking from " + bot.entity.position + " to " + point);
   bot.navigate.stop();
 
@@ -47,12 +47,19 @@ exports.walkToPoint = function (point) {
   return promise;
 };
 
+exports.walkToPoint = function (point) {
+  var bot = this;
+
+  return walkToPoint(bot, point);
+};
+
 exports.walkToOffset = function (direction, offset) {
   if (worldLib.isInvalidDirection(direction)) {
     return Promise.reject("Unrecognized direction " + direction);
   }
+  var bot = this;
 
-  return exports.walkToPoint(worldLib.offsetToPoint(bot, direction, offset));
+  return walkToPoint(bot, worldLib.offsetToPoint(bot, direction, offset));
 };
 
 var clearListeners = function (bot) {

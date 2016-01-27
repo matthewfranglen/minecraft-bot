@@ -53,6 +53,7 @@ exports.digOffset = function (direction, offset) {
   if (worldLib.isInvalidDirection(direction)) {
     return Promise.reject("Unrecognized direction " + direction);
   }
+  var bot = this;
 
   return exports.dig(worldLib.offsetToPoint(bot, direction, offset));
 };
@@ -61,6 +62,7 @@ exports.digShape = function (direction, shape) {
   if (isInvalidDirection(direction)) {
     return Promise.reject("Unrecognized direction " + direction);
   }
+  var bot = this;
 
   return shapeTracer(bot, direction, shape, dig);
 };

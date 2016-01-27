@@ -88,45 +88,34 @@ var commands = {
 
     switch(shape) {
       case 'point':
-        bot.dig.offset(direction, [1, 0, 1]);
-        break;
+        return bot.dig.offset(direction, [1, 0, 1]);
       case 'square':
-        bot.dig.shape(direction, shapes.square);
-        break;
+        return bot.dig.shape(direction, shapes.square);
       default:
         bot.bot.chat("Unrecognized shape " + shape);
         break;
     }
+    return Promise.resolve();
   },
   move: function (bot, command) {
     var direction = command.args[0],
       distance = parseInt(command.args[1]) || 1;
 
-    bot.move.offset(direction, [distance + 1, 0, 0]);
+    return bot.move.offset(direction, [distance + 1, 0, 0]);
   },
   come: function (bot, command) {
-    bot.move.point(bot.bot.players[command.from].entity.position);
+    return bot.move.point(bot.bot.players[command.from].entity.position);
   },
   look: function (bot, command) {
-    bot.look(command.args[0]);
+    return bot.look(command.args[0]);
   },
   toss: function (bot) {
-    bot.toss();
-  },
-  repeat: function (bot, command, history) {
-    var range = command.args[0],
-      count = parseInt(command.args[1]) || 1;
-
-    if (range !== 'last') {
-      bot.bot.chat("Unrecognized repeat range " + range);
-      return;
-    }
-
+    return bot.toss();
   },
   stop: function (bot) {
-    bot.stop();
+    return bot.stop();
   },
   quit: function (bot) {
-    bot.quit();
+    return bot.quit();
   }
 };
