@@ -5,7 +5,7 @@ var mineflayer = require('mineflayer');
 var chatLib = require('./chat.js');
 var digLib = require('./dig.js');
 var navigateLib = require('./navigate.js');
-var tossLib = require('./toss.js');
+var inventoryLib = require('./inventory.js');
 var navigatePlugin = require('mineflayer-navigate')(mineflayer);
 
 exports.createBot = function (name) {
@@ -15,14 +15,12 @@ exports.createBot = function (name) {
       username: name
   });
 
-  bot.on('end', onEnd);
-  bot.on('kicked', onKick);
-
   navigatePlugin(bot);
+  handleEvents(bot);
 
   var dig = digLib.digBlock.bind(bot);
   var walk = navigateLib.walkTo.bind(bot);
-  var toss = tossLib.tossAll.bind(bot);
+  var toss = inventoryLib.tossAll.bind(bot);
 
   var botWrapper = {
     bot: bot,
@@ -82,6 +80,29 @@ exports.createBot = function (name) {
   return botWrapper;
 };
 
+var handleEvents = function (bot) {
+  var onEnd = function () {
+    console.log('I have been disconnected');
+  };
+
+  var onLogin = function () {
+    console.log(bot.username + " logged in");
+  };
+
+  var onKick = function (reason, loggedIn) {
+    console.log('I was kicked for ' + reason);
+  };
+
+  var onChat = function (username, message) {
+    console.log(username+' says: '+message);
+  };
+
+  bot.on('chat', onChat);
+  bot.on('login', onLogin);
+  bot.on('end', onEnd);
+  bot.on('kicked', onKick);
+};
+
 var directionMatricies = {
   north: [[ 0,  1,  0],
           [ 0,  0,  1],
@@ -132,12 +153,4 @@ var shapeTracer = function (bot, direction, shape, f) {
   };
 
   return trace(shape.slice());
-};
-
-var onEnd = function () {
-  console.log('I have been disconnected');
-};
-
-var onKick = function (reason, loggedIn) {
-  console.log('I was kicked for ' + reason);
 };
