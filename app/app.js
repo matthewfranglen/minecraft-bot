@@ -9,7 +9,7 @@ var bot = require('./bot/bot.js');
 var settings = require('./knowledge/identity.json');
 
 var primaryBot = bot.createBot(settings.username);
-repl.enableRepl(primaryBot.bot, mineflayer);
+repl.enableRepl(primaryBot, mineflayer);
 primaryBot.bot.on('chat', function (username, message) {
   var parts = message.split(' ');
 
