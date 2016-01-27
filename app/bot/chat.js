@@ -74,5 +74,8 @@ var commands = {
   },
   toss: function (bot) {
     bot.toss();
+  },
+  quit: function (bot) {
+    bot.quit();
   }
 };
