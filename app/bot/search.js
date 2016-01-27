@@ -17,8 +17,7 @@ exports.install = function (bot) {
 //   success: found all requested blocks
 //   partial: found some requested blocks
 // blocks:
-//   The list of block points.
-//   This is always present, but only has values for success and partial statuses.
+//   The list of blocks found.
 //
 // If the search was unsuccessful the error will be:
 //   none: found no requested blocks
@@ -42,10 +41,10 @@ exports.findBlock = function (name, count) {
     });
 
     if (points.length >= count) {
-      resolve({ 'status': 'success', 'blocks': points.map(p => p.position) });
+      resolve({ 'status': 'success', 'blocks': points });
     }
     else if (points.length) {
-      resolve({ 'status': 'partial', 'blocks': points.map(p => p.position) });
+      resolve({ 'status': 'partial', 'blocks': points });
     }
     else {
       reject('none');
