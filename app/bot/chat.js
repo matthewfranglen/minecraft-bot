@@ -35,6 +35,7 @@ exports.enableChatCommands = function (bot) {
       invoke(bot, command, bot.chat.clearBusyCommand, bot.chat.clearBusyCommand);
     }
     else {
+      bot.bot.chat("Queueing command " + command.action);
       bot.chat.commands.push(command);
 
       if (! bot.chat.busy) {
@@ -55,21 +56,27 @@ var isNotForMe = function (bot, messageParts) {
 };
 
 var isSpecialAction = function (command) {
-  return command.action !== 'stop' && command.action !== 'quit';
+  return command.action === 'stop' || command.action === 'quit';
 };
 
 var invokeQueuedCommand = function (bot) {
-  if (! bot.chat.commands) {
+  bot.chat.busy = true;
+
+  var command = bot.chat.commands.shift();
+  if (command === undefined) {
+    bot.bot.chat("Finished all commands...");
     bot.chat.busy = false;
     return;
   }
-  bot.chat.busy = true;
 
-  var command = bot.chat.commands.pop();
-  invoke(bot, command, function () { invokeQueuedCommand(bot); });
+  invoke(bot, command, function () {
+    bot.bot.chat("Looping");
+    invokeQueuedCommand(bot);
+  });
 };
 
 var invoke = function (bot, command, callback) {
+  bot.bot.chat("Invoking command " + command.action);
   commands[command.action](bot, command).then(callback, callback);
 };
 

@@ -17,11 +17,9 @@ const DIG_RANGE = 5;
 //   tool: equipment not suitable
 //   missing: no block at point
 //   interrupted: digging interrupted
-exports.digPoint = function (point) {
+var digPoint = function (bot, point) {
   console.log("Digging the point: " + point);
-  var bot = this;
   var block = bot.blockAt(point);
-  bot.chat('Digging at ' + point);
 
   var promise = new Promise(function (resolve, reject) {
     if (! block) {
@@ -49,20 +47,29 @@ exports.digPoint = function (point) {
   return promise;
 };
 
+exports.digPoint = function (point) {
+  var bot = this;
+
+  return digPoint(bot, point);
+};
+
 exports.digOffset = function (direction, offset) {
   if (worldLib.isInvalidDirection(direction)) {
     return Promise.reject("Unrecognized direction " + direction);
   }
   var bot = this;
 
-  return exports.dig(worldLib.offsetToPoint(bot, direction, offset));
+  return digPoint(bot, worldLib.offsetToPoint(bot, direction, offset));
 };
 
 exports.digShape = function (direction, shape) {
-  if (isInvalidDirection(direction)) {
+  if (worldLib.isInvalidDirection(direction)) {
     return Promise.reject("Unrecognized direction " + direction);
   }
   var bot = this;
+  var dig = function (point) {
+    return digPoint(bot, point);
+  };
 
   return shapeTracer(bot, direction, shape, dig);
 };
@@ -74,7 +81,7 @@ var shapeTracer = function (bot, direction, shape, f) {
       return;
     }
 
-    var point = offsetToPoint(bot, direction, offset);
+    var point = worldLib.offsetToPoint(bot, direction, offset);
     var recur = function () {
       return trace(shape);
     };

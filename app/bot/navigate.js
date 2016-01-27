@@ -21,7 +21,7 @@ exports.install = function (bot) {
 //   timeout: path search timed out
 //   tooFar: distance to point too far
 var walkToPoint = function (bot, point) {
-  bot.chat("Walking from " + bot.entity.position + " to " + point);
+  console.log("Walking from " + bot.entity.position + " to " + point);
   bot.navigate.stop();
 
   var promise = new Promise(function (resolve, reject) {
