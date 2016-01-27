@@ -33,10 +33,11 @@ exports.createBot = function (name) {
       offset: navigateLib.walkToOffset.bind(bot)
     },
 
-    look: lookAt.bind(bot),
     toss: inventoryLib.tossAll.bind(bot),
+
+    look: lookAt.bind(bot),
     stop: stop.bind(bot),
-    quit: bot.quit.bind(bot)
+    quit: quit.bind(bot)
   };
   chatLib.enableChatCommands(botWrapper);
 
@@ -85,6 +86,8 @@ var lookAt = function (direction) {
       bot.lookAt(worldLib.offsetToPoint(bot, direction, [3, 0, 0]));
       break;
   }
+
+  return Promise.resolve();
 };
 
 var stop = function () {
@@ -94,4 +97,14 @@ var stop = function () {
     bot.stopDigging();
   }
   bot.navigate.stop();
+
+  return Promise.resolve();
+};
+
+var quit = function () {
+  var bot = this;
+
+  bot.quit();
+
+  return Promise.resolve();
 };
