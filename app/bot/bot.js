@@ -22,6 +22,12 @@ exports.createBot = function (name) {
   var walk = navigateLib.walkTo.bind(bot);
   var toss = inventoryLib.tossAll.bind(bot);
   var quit = bot.quit.bind(bot);
+  var stop = function () {
+    if (bot.targetDigBlock) {
+      bot.stopDigging();
+    }
+    bot.navigate.stop();
+  };
 
   var botWrapper = {
     bot: bot,
@@ -75,7 +81,7 @@ exports.createBot = function (name) {
     },
 
     toss: toss,
-
+    stop: stop,
     quit: quit
   };
   chatLib.enableChatCommands(botWrapper);
