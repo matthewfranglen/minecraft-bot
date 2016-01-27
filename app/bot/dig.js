@@ -1,6 +1,8 @@
 /* jshint esnext: true */
 // Wraps digging blocks
 
+var worldLib = require('./world.js');
+
 const DIG_RANGE = 5;
 
 
@@ -15,7 +17,7 @@ const DIG_RANGE = 5;
 //   tool: equipment not suitable
 //   missing: no block at point
 //   interrupted: digging interrupted
-exports.digBlock = function (point) {
+exports.digPoint = function (point) {
   console.log("Digging the point: " + point);
   var bot = this;
   var block = bot.blockAt(point);
@@ -45,4 +47,37 @@ exports.digBlock = function (point) {
   });
 
   return promise;
+};
+
+exports.digOffset = function (direction, offset) {
+  if (worldLib.isInvalidDirection(direction)) {
+    return Promise.reject("Unrecognized direction " + direction);
+  }
+
+  return exports.dig(worldLib.offsetToPoint(bot, direction, offset));
+};
+
+exports.digShape = function (direction, shape) {
+  if (isInvalidDirection(direction)) {
+    return Promise.reject("Unrecognized direction " + direction);
+  }
+
+  return shapeTracer(bot, direction, shape, dig);
+};
+
+var shapeTracer = function (bot, direction, shape, f) {
+  var trace = function (shape) {
+    var offset = shape.pop();
+    if (! offset) {
+      return;
+    }
+
+    var point = offsetToPoint(bot, direction, offset);
+    var recur = function () {
+      return trace(shape);
+    };
+    return f(point).then(recur, recur);
+  };
+
+  return trace(shape.slice());
 };

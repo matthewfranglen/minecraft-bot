@@ -19,7 +19,7 @@ exports.install = function (bot) {
 // If the walk was unsuccessful the error will be:
 //   timeout: path search timed out
 //   tooFar: distance to point too far
-exports.walkTo = function (point) {
+exports.walkToPoint = function (point) {
   var bot = this;
   bot.chat("Walking from " + bot.entity.position + " to " + point);
   bot.navigate.stop();
@@ -45,6 +45,14 @@ exports.walkTo = function (point) {
   });
 
   return promise;
+};
+
+exports.walkToOffset = function (direction, offset) {
+  if (worldLib.isInvalidDirection(direction)) {
+    return Promise.reject("Unrecognized direction " + direction);
+  }
+
+  return exports.walkToPoint(worldLib.offsetToPoint(bot, direction, offset));
 };
 
 var clearListeners = function (bot) {
