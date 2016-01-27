@@ -66,9 +66,7 @@ exports.createBot = function (name) {
         case 'south':
         case 'east':
         case 'west':
-          var point = offsetToPoint(bot, direction, [1, 0, 1.5]);
-          console.log("Looking at " + point);
-          bot.lookAt(point);
+          bot.lookAt(offsetToPoint(bot, direction, [1, 0, 1.5]));
           break;
         case 'up':
         case 'down':
