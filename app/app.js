@@ -14,7 +14,7 @@ primaryBot.bot.on('chat', function (username, message) {
   var parts = message.split(' ');
 
   if (parts[0] === 'create') {
-    primaryBot.chat('Creating bot ' + parts[1]);
-    createBot(parts[1]);
+    primaryBot.bot.chat('Creating bot ' + parts[1]);
+    bot.createBot(parts[1]);
   }
 });

@@ -30,12 +30,11 @@ exports.enableChatCommands = function (bot) {
       return;
     }
 
-    if (isSpecialAction(command)) {
+    if (isImmediateAction(command)) {
       bot.chat.busy = true;
       invoke(bot, command, bot.chat.clearBusyCommand, bot.chat.clearBusyCommand);
     }
     else {
-      bot.bot.chat("Queueing command " + command.action);
       bot.chat.commands.push(command);
 
       if (! bot.chat.busy) {
@@ -55,8 +54,12 @@ var isNotForMe = function (bot, messageParts) {
   }
 };
 
-var isSpecialAction = function (command) {
+var isImmediateAction = function (command) {
   return command.action === 'stop' || command.action === 'quit';
+};
+
+var isUnloggedAction = function (command) {
+  return command.action === 'stop' || command.action === 'quit' || command.action === 'history';
 };
 
 var invokeQueuedCommand = function (bot) {
@@ -64,20 +67,21 @@ var invokeQueuedCommand = function (bot) {
 
   var command = bot.chat.commands.shift();
   if (command === undefined) {
-    bot.bot.chat("Finished all commands...");
     bot.chat.busy = false;
     return;
   }
 
   invoke(bot, command, function () {
-    bot.bot.chat("Looping");
     invokeQueuedCommand(bot);
   });
 };
 
 var invoke = function (bot, command, callback) {
-  bot.bot.chat("Invoking command " + command.action);
   commands[command.action](bot, command).then(callback, callback);
+
+  if (! isUnloggedAction(command)) {
+    bot.chat.history.push(command);
+  }
 };
 
 var shapes = {};
@@ -89,6 +93,18 @@ var shapes = {};
 shapes.square = [-1, 0, 1].map(x => [0, 1, 2].map(y => [1, x, y])).reduce((a, v) => a.concat(v), []);
 
 var commands = {
+  repeat: function (bot, command) {
+    var range = command.args[0],
+      count = parseInt(command.args[1]) || 1;
+
+    if (range !== 'last') {
+      bot.bot.chat("Unrecognized range " + range);
+    }
+
+    bot.chat.commands = bot.chat.commands.concat(bot.chat.history.slice(count * -1));
+
+    return Promise.resolve();
+  },
   dig: function (bot, command) {
     var direction = command.args[0],
       shape = command.args[1];
