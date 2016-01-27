@@ -1,6 +1,15 @@
 /* jshint esnext: true */
 
 exports.enableChatCommands = function (bot) {
+  bot.chat = {
+    history: [],
+    commands: [],
+    busy: false,
+    clearBusyFlag: function () {
+      bot.chat.busy = false;
+    }
+  };
+
   bot.bot.on('chat', function (username, message) {
     if (username === bot.username) {
       return;
@@ -21,7 +30,17 @@ exports.enableChatCommands = function (bot) {
       return;
     }
 
-    commands[command.action](bot, command);
+    if (isSpecialAction(command)) {
+      bot.chat.busy = true;
+      invoke(bot, command, bot.chat.clearBusyCommand, bot.chat.clearBusyCommand);
+    }
+    else {
+      bot.chat.commands.push(command);
+
+      if (! bot.chat.busy) {
+        invokeQueuedCommand(bot);
+      }
+    }
   });
 };
 
@@ -33,6 +52,25 @@ var isNotForMe = function (bot, messageParts) {
   catch (exception) {
     return true;
   }
+};
+
+var isSpecialAction = function (command) {
+  return command.action !== 'stop' && command.action !== 'quit';
+};
+
+var invokeQueuedCommand = function (bot) {
+  if (! bot.chat.commands) {
+    bot.chat.busy = false;
+    return;
+  }
+  bot.chat.busy = true;
+
+  var command = bot.chat.commands.pop();
+  invoke(bot, command, function () { invokeQueuedCommand(bot); });
+};
+
+var invoke = function (bot, command, callback) {
+  commands[command.action](bot, command).then(callback, callback);
 };
 
 var shapes = {};
@@ -74,6 +112,16 @@ var commands = {
   },
   toss: function (bot) {
     bot.toss();
+  },
+  repeat: function (bot, command, history) {
+    var range = command.args[0],
+      count = parseInt(command.args[1]) || 1;
+
+    if (range !== 'last') {
+      bot.bot.chat("Unrecognized repeat range " + range);
+      return;
+    }
+
   },
   stop: function (bot) {
     bot.stop();
