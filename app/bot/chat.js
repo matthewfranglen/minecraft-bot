@@ -23,7 +23,7 @@ exports.enableChatCommands = function (bot) {
       return;
     }
 
-    var command = parser.parse(parts[1]);
+    var command = parser.parse(username, parts[1]);
     if (! command) {
       bot.bot.chat("Unknown command " + command);
       return;

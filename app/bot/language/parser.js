@@ -1,5 +1,5 @@
 var commands = {
-  come: require('./command/base.js'),
+  come: require('./command/come.js'),
   dig: require('./command/dig.js'),
   look: require('./command/look.js'),
   move: require('./command/move.js'),
@@ -10,20 +10,20 @@ var commands = {
 };
 
 var commandFactories = [
-  commands.quit.QuitCommandFactory,
-  commands.stop.StopCommandFactory,
-  commands.repeat.RepeatCommandFactory,
+  commands.quit.QuitCommandFactory(),
+  commands.stop.StopCommandFactory(),
+  commands.repeat.RepeatCommandFactory(),
 
-  commands.come.ComeCommandFactory,
-  commands.dig.DigCommandFactory,
-  commands.look.LookCommandFactory,
-  commands.move.MoveCommandFactory,
-  commands.toss.TossCommandFactory
+  commands.come.ComeCommandFactory(),
+  commands.dig.DigCommandFactory(),
+  commands.look.LookCommandFactory(),
+  commands.move.MoveCommandFactory(),
+  commands.toss.TossCommandFactory()
 ];
 
-exports.parse = function (expression) {
+exports.parse = function (username, expression) {
   for (var factory in commandFactories) {
-    var command = factory(expression);
+    var command = factory(username, expression);
 
     if (command) {
       return command;
