@@ -13,11 +13,11 @@ RepeatCommand.prototype.shouldAddToHistory = function () {
 };
 
 RepeatCommand.prototype.invoke = function (bot) {
-  if (this.repetitions > bot.command.history.length) {
+  if (this.commands > bot.command.history.length) {
     return Promise.reject("Not enough commands in the history");
   }
 
-  var repeatedCommands = bot.command.history.slice(-1 * this.repetitions);
+  var repeatedCommands = bot.command.history.slice(-1 * this.commands);
 
   for (i = 0; i < this.repetitions; i++) {
     bot.command.queue = bot.command.queue.concat(repeatedCommands);
