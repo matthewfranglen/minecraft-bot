@@ -1,6 +1,8 @@
 var base = require('./base.js');
 
 var LookCommand = function (direction) {
+  base.AbstractCommand.call(this);
+
   this.direction = direction;
 };
 LookCommand.prototype = Object.create(base.AbstractCommand.prototype);

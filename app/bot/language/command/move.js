@@ -1,6 +1,8 @@
 var base = require('./base.js');
 
 var MoveCommand = function (direction, distance) {
+  base.AbstractCommand.call(this);
+
   this.direction = direction;
   this.distance = parseInt(distance) || 1;
 };

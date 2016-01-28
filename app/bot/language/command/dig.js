@@ -10,6 +10,8 @@ var shapes = {};
 shapes.square = [-1, 0, 1].map(x => [0, 1, 2].map(y => [1, x, y])).reduce((a, v) => a.concat(v), []);
 
 var DigCommand = function (direction, shape) {
+  base.AbstractCommand.call(this);
+
   this.direction = direction;
   this.shape = shape || 'point';
 };

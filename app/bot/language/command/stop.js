@@ -1,6 +1,8 @@
 var base = require('./base.js');
 
-var StopCommand = function () {};
+var StopCommand = function () {
+  base.AbstractCommand.call(this);
+};
 StopCommand.prototype = Object.create(base.AbstractCommand.prototype);
 
 StopCommand.prototype.isImmediate = function () {
@@ -15,4 +17,6 @@ StopCommand.prototype.invoke = function (bot) {
   return bot.stop();
 };
 
-exports.StopCommandFactory = base.SimpleCommandFactory('stop', StopCommand);
+exports.StopCommandFactory = function () {
+  return base.SimpleCommandFactory('stop', StopCommand);
+};

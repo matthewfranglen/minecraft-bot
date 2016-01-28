@@ -1,6 +1,8 @@
 var base = require('./base.js');
 
 var RepeatCommand = function (commands, repetitions) {
+  base.AbstractCommand.call(this);
+
   this.commands = commands;
   this.repetitions = parseInt(repetitions) || 1;
 };

@@ -1,6 +1,8 @@
 var base = require('./base.js');
 
 var ComeCommand = function (username) {
+  base.AbstractCommand.call(this);
+
   this.username = username;
 };
 ComeCommand.prototype = Object.create(base.AbstractCommand.prototype);

@@ -1,6 +1,8 @@
 var base = require('./base.js');
 
-var QuitCommand = function () {};
+var QuitCommand = function () {
+  base.AbstractCommand.call(this);
+};
 QuitCommand.prototype = Object.create(base.AbstractCommand.prototype);
 
 QuitCommand.prototype.isImmediate = function () {
@@ -15,4 +17,6 @@ QuitCommand.prototype.invoke = function (bot) {
   return bot.quit();
 };
 
-exports.QuitCommandFactory = base.SimpleCommandFactory('quit', QuitCommand);
+exports.QuitCommandFactory = function () {
+  return base.SimpleCommandFactory('quit', QuitCommand);
+};

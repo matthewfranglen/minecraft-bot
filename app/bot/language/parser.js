@@ -22,8 +22,9 @@ var commandFactories = [
 ];
 
 exports.parse = function (username, expression) {
-  for (var factory in commandFactories) {
-    var command = factory(username, expression);
+  for (i = 0; i < commandFactories.length; i++) {
+    console.log(commandFactories[i]);
+    var command = commandFactories[i](username, expression);
 
     if (command) {
       return command;
