@@ -1,7 +1,9 @@
 exports.SimpleCommandFactory = function (statement, constructor) {
-  var singleton = constructor();
+  var singleton = new constructor();
 
   return function (username, command) {
+    console.log("Testing " + username + " and " + command + " against " + statement);
+    console.log(singleton);
     if (command === statement) {
       return singleton;
     }

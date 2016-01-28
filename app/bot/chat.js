@@ -25,7 +25,7 @@ exports.enableChatCommands = function (bot) {
 
     var command = parser.parse(username, parts[1]);
     if (! command) {
-      bot.bot.chat("Unknown command " + command);
+      bot.bot.chat("Unknown command " + parts[1]);
       return;
     }
 
