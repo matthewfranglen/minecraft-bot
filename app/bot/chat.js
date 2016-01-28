@@ -1,13 +1,14 @@
 /* jshint esnext: true */
 
 exports.enableChatCommands = function (bot) {
-  bot.chat = {
+  bot.command = {
     history: [],
-    commands: [],
-    busy: false,
-    clearBusyFlag: function () {
-      bot.chat.busy = false;
-    }
+    queue: [],
+    busy: false
+  };
+
+  var clearBusyFlag = function () {
+    bot.command.busy = false;
   };
 
   bot.bot.on('chat', function (username, message) {
@@ -15,29 +16,25 @@ exports.enableChatCommands = function (bot) {
       return;
     }
 
-    var parts = message.split(' ');
-    if (isNotForMe(bot, parts)) {
+    var parts = message.split(' ', 2);
+    if (isNotForMe(bot, parts[0])) {
       return;
     }
 
-    var command = {
-      from: username,
-      action: parts[1],
-      args: parts.slice(2)
-    };
-    if (! (command.action in commands) ) {
-      bot.bot.chat("Unknown command " + command.action);
+    var command = parser.parse(parts[1]);
+    if (! command) {
+      bot.bot.chat("Unknown command " + command);
       return;
     }
 
-    if (isImmediateAction(command)) {
-      bot.chat.busy = true;
-      invoke(bot, command, bot.chat.clearBusyCommand, bot.chat.clearBusyCommand);
+    if (command.isImmediate()) {
+      bot.command.busy = true;
+      invoke(bot, command, clearBusyFlag);
     }
     else {
-      bot.chat.commands.push(command);
+      bot.command.queue.push(command);
 
-      if (! bot.chat.busy) {
+      if (! bot.command.busy) {
         invokeQueuedCommand(bot);
       }
     }
@@ -54,20 +51,12 @@ var isNotForMe = function (bot, messageParts) {
   }
 };
 
-var isImmediateAction = function (command) {
-  return command.action === 'stop' || command.action === 'quit';
-};
-
-var isUnloggedAction = function (command) {
-  return command.action === 'stop' || command.action === 'quit' || command.action === 'history';
-};
-
 var invokeQueuedCommand = function (bot) {
-  bot.chat.busy = true;
+  bot.command.busy = true;
 
-  var command = bot.chat.commands.shift();
+  var command = bot.command.queue.shift();
   if (command === undefined) {
-    bot.chat.busy = false;
+    bot.command.busy = false;
     return;
   }
 
@@ -77,72 +66,13 @@ var invokeQueuedCommand = function (bot) {
 };
 
 var invoke = function (bot, command, callback) {
-  commands[command.action](bot, command).then(callback, callback);
+  var notifyAndCallback = function (reason) {
+    bot.bot.chat(reason);
+    return callback();
+  };
+  command.invoke(bot).then(callback, notifyAndCallback);
 
-  if (! isUnloggedAction(command)) {
-    bot.chat.history.push(command);
-  }
-};
-
-var shapes = {};
-
-// the square is fixed depth because it is created in front of the player
-// the square varies in x because it is created around the player
-// the square increases in y because it is created from the feet upwards
-// this creates an array of arrays where each one represents the offset of that point of the square
-shapes.square = [-1, 0, 1].map(x => [0, 1, 2].map(y => [1, x, y])).reduce((a, v) => a.concat(v), []);
-
-var commands = {
-  repeat: function (bot, command) {
-    var range = command.args[0],
-      count = parseInt(command.args[1]) || 1,
-      repetitions = parseInt(command.args[2]) || 1;
-
-    if (range !== 'last') {
-      bot.bot.chat("Unrecognized range " + range);
-      return Promise.reject();
-    }
-
-    for (i = 0; i < repetitions; i++) {
-      bot.chat.commands = bot.chat.commands.concat(bot.chat.history.slice(count * -1));
-    }
-
-    return Promise.resolve();
-  },
-  dig: function (bot, command) {
-    var direction = command.args[0],
-      shape = command.args[1];
-
-    switch(shape) {
-      case 'point':
-        return bot.dig.offset(direction, [1, 0, 1]);
-      case 'square':
-        return bot.dig.shape(direction, shapes.square);
-      default:
-        bot.bot.chat("Unrecognized shape " + shape);
-        break;
-    }
-    return Promise.resolve();
-  },
-  move: function (bot, command) {
-    var direction = command.args[0],
-      distance = parseInt(command.args[1]) || 1;
-
-    return bot.move.offset(direction, [distance + 1, 0, 0]);
-  },
-  come: function (bot, command) {
-    return bot.move.point(bot.bot.players[command.from].entity.position);
-  },
-  look: function (bot, command) {
-    return bot.look(command.args[0]);
-  },
-  toss: function (bot) {
-    return bot.toss();
-  },
-  stop: function (bot) {
-    return bot.stop();
-  },
-  quit: function (bot) {
-    return bot.quit();
+  if (command.shouldAddToHistory()) {
+    bot.command.history.push(command);
   }
 };
