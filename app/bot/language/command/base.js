@@ -1,4 +1,4 @@
-var SimpleCommandFactory = function (statement, constructor) {
+exports.SimpleCommandFactory = function (statement, constructor) {
   var singleton = constructor();
 
   return function (username, command) {
@@ -8,16 +8,16 @@ var SimpleCommandFactory = function (statement, constructor) {
   };
 };
 
-var AbstractCommand = function () {};
+exports.AbstractCommand = function () {};
 
-AbstractCommand.prototype.invoke = function (bot) {
+exports.AbstractCommand.prototype.invoke = function (bot) {
   return Promise.reject("This command is unimplemented");
 };
 
-AbstractCommand.prototype.isImmediate = function () {
+exports.AbstractCommand.prototype.isImmediate = function () {
   return false;
 };
 
-AbstractCommand.prototype.shouldAddToHistory = function () {
+exports.AbstractCommand.prototype.shouldAddToHistory = function () {
   return true;
 };

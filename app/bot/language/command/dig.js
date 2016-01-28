@@ -9,17 +9,6 @@ var shapes = {};
 // this creates an array of arrays where each one represents the offset of that point of the square
 shapes.square = [-1, 0, 1].map(x => [0, 1, 2].map(y => [1, x, y])).reduce((a, v) => a.concat(v), []);
 
-exports.DigCommandFactory = function () {
-  var pattern = /^dig ([^ ]+)(?: ([^ ]+))?$/;
-  return function (username, command) {
-    var match = command.match(pattern);
-
-    if (match) {
-      return new DigCommand(match[0], match[1]);
-    }
-  };
-};
-
 var DigCommand = function (direction, shape) {
   this.direction = direction;
   this.shape = shape || 'point';
@@ -42,4 +31,15 @@ var dig = function (bot, direction) {
 
 var digShape = function (bot, direction, shape) {
   return bot.dig.shape(direction, shape);
+};
+
+exports.DigCommandFactory = function () {
+  var pattern = /^dig ([^ ]+)(?: ([^ ]+))?$/;
+  return function (username, command) {
+    var match = command.match(pattern);
+
+    if (match) {
+      return new DigCommand(match[0], match[1]);
+    }
+  };
 };

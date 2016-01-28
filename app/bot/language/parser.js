@@ -1,12 +1,12 @@
 var commands = {
   come: require('./command/base.js'),
-  dig: require('./commands/dig.js'),
-  look: require('./commands/look.js'),
-  move: require('./commands/move.js'),
-  quit: require('./commands/quit.js'),
-  repeat: require('./commands/repeat.js'),
-  stop: require('./commands/stop.js'),
-  toss: require('./commands/toss.js')
+  dig: require('./command/dig.js'),
+  look: require('./command/look.js'),
+  move: require('./command/move.js'),
+  quit: require('./command/quit.js'),
+  repeat: require('./command/repeat.js'),
+  stop: require('./command/stop.js'),
+  toss: require('./command/toss.js')
 };
 
 var commandFactories = [

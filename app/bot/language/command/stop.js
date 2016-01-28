@@ -1,7 +1,5 @@
 var base = require('./base.js');
 
-exports.StopCommandFactory = base.SimpleCommandFactory('stop', StopCommand);
-
 var StopCommand = function () {};
 StopCommand.prototype = Object.create(base.AbstractCommand.prototype);
 
@@ -16,3 +14,5 @@ StopCommand.prototype.shouldAddToHistory = function () {
 StopCommand.prototype.invoke = function (bot) {
   return bot.stop();
 };
+
+exports.StopCommandFactory = base.SimpleCommandFactory('stop', StopCommand);

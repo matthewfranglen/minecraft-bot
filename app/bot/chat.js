@@ -1,5 +1,7 @@
 /* jshint esnext: true */
 
+var parser = require('./language/parser.js');
+
 exports.enableChatCommands = function (bot) {
   bot.command = {
     history: [],

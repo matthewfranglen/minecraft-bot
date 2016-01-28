@@ -1,16 +1,5 @@
 var base = require('./base.js');
 
-exports.RepeatCommandFactory = function () {
-  var pattern = /^repeat the last (\d+) commands(?: (\d+) times)?$/;
-  return function (username, command) {
-    var match = command.match(pattern);
-
-    if (match) {
-      return new RepeatCommand(match[0], match[1]);
-    }
-  };
-};
-
 var RepeatCommand = function (commands, repetitions) {
   this.commands = commands;
   this.repetitions = parseInt(repetitions) || 1;
@@ -33,4 +22,15 @@ RepeatCommand.prototype.invoke = function (bot) {
   }
 
   return Promise.resolve();
+};
+
+exports.RepeatCommandFactory = function () {
+  var pattern = /^repeat the last (\d+) commands(?: (\d+) times)?$/;
+  return function (username, command) {
+    var match = command.match(pattern);
+
+    if (match) {
+      return new RepeatCommand(match[0], match[1]);
+    }
+  };
 };
