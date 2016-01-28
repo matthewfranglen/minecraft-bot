@@ -1,7 +1,7 @@
 var SimpleCommandFactory = function (statement, constructor) {
   var singleton = constructor();
 
-  return function (command) {
+  return function (username, command) {
     if (command === statement) {
       return singleton;
     }
