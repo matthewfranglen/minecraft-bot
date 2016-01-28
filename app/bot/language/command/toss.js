@@ -10,5 +10,5 @@ TossCommand.prototype.invoke = function (bot) {
 };
 
 exports.TossCommandFactory = function () {
-  return base.SimpleCommandFactory('stop', TossCommand);
+  return base.SimpleCommandFactory('toss', TossCommand);
 };
