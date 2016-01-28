@@ -95,13 +95,16 @@ shapes.square = [-1, 0, 1].map(x => [0, 1, 2].map(y => [1, x, y])).reduce((a, v)
 var commands = {
   repeat: function (bot, command) {
     var range = command.args[0],
-      count = parseInt(command.args[1]) || 1;
+      count = parseInt(command.args[1]) || 1,
+      repetitions = parseInt(command.args[2]) || 1;
 
     if (range !== 'last') {
       bot.bot.chat("Unrecognized range " + range);
     }
 
-    bot.chat.commands = bot.chat.commands.concat(bot.chat.history.slice(count * -1));
+    for (i = 0; i < repetitions; i++) {
+      bot.chat.commands = bot.chat.commands.concat(bot.chat.history.slice(count * -1));
+    }
 
     return Promise.resolve();
   },
