@@ -70,7 +70,7 @@ var invokeQueuedCommand = function (bot) {
 
 var invoke = function (bot, command, callback) {
   var notifyAndCallback = function (reason) {
-    bot.bot.chat(reason);
+    bot.bot.chat("Had problems: " + reason);
     return callback();
   };
   command.invoke(bot).then(callback, notifyAndCallback);

@@ -20,9 +20,9 @@ DigCommand.prototype = Object.create(base.AbstractCommand.prototype);
 DigCommand.prototype.invoke = function (bot) {
   switch(this.shape) {
     case 'point':
-      return dig(bot, direction);
+      return dig(bot, this.direction);
     case 'square':
-      return digShape(bot, direction, shapes.square);
+      return digShape(bot, this.direction, shapes.square);
   }
   return Promise.reject("Unknown shape " + this.shape);
 };
