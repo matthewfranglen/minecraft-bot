@@ -100,6 +100,7 @@ var commands = {
 
     if (range !== 'last') {
       bot.bot.chat("Unrecognized range " + range);
+      return Promise.reject();
     }
 
     for (i = 0; i < repetitions; i++) {
