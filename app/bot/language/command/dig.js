@@ -41,7 +41,7 @@ exports.DigCommandFactory = function () {
     var match = command.match(pattern);
 
     if (match) {
-      return new DigCommand(match[0], match[1]);
+      return new DigCommand(match[1], match[2]);
     }
   };
 };

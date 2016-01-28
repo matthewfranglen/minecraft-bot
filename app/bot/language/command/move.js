@@ -18,7 +18,7 @@ exports.MoveCommandFactory = function () {
     var match = command.match(pattern);
 
     if (match) {
-      return new MoveCommand(match[0], match[1]);
+      return new MoveCommand(match[1], match[2]);
     }
   };
 };

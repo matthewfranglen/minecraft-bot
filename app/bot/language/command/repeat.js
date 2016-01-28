@@ -32,7 +32,7 @@ exports.RepeatCommandFactory = function () {
     var match = command.match(pattern);
 
     if (match) {
-      return new RepeatCommand(match[0], match[1]);
+      return new RepeatCommand(match[1], match[2]);
     }
   };
 };

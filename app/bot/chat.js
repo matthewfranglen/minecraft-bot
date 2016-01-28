@@ -18,14 +18,15 @@ exports.enableChatCommands = function (bot) {
       return;
     }
 
-    var parts = message.split(' ', 2);
-    if (isNotForMe(bot, parts[0])) {
+    var botIdentifier = message.split(' ', 1);
+    if (isNotForMe(bot, botIdentifier[0])) {
       return;
     }
 
-    var command = parser.parse(username, parts[1]);
+    var expression = message.substring(botIdentifier[0].length + 1);
+    var command = parser.parse(username, expression);
     if (! command) {
-      bot.bot.chat("Unknown command " + parts[1]);
+      bot.bot.chat("Unknown command " + expression);
       return;
     }
 

@@ -12,12 +12,12 @@ LookCommand.prototype.invoke = function (bot) {
 };
 
 exports.LookCommandFactory = function () {
-  var pattern = /^move ([^ ]+)$/;
+  var pattern = /^look ([^ ]+)$/;
   return function (username, command) {
     var match = command.match(pattern);
 
     if (match) {
-      return new LookCommand(match[0]);
+      return new LookCommand(match[1]);
     }
   };
 };
