@@ -44,9 +44,9 @@ exports.enableChatCommands = function (bot) {
   });
 };
 
-var isNotForMe = function (bot, messageParts) {
+var isNotForMe = function (bot, usernamePattern) {
   try {
-    var pattern = new RegExp(messageParts[0]);
+    var pattern = new RegExp(usernamePattern);
     return ! bot.bot.username.match(pattern);
   }
   catch (exception) {
