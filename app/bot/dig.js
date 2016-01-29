@@ -5,6 +5,51 @@ var worldLib = require('./world.js');
 
 const DIG_RANGE = 5;
 
+var useBestEquipment = function (bot, point) {
+  var block = bot.blockAt(point);
+
+  var tools;
+  if (! block.harvestTools) {
+    tools = bot.inventory.slots;
+  }
+  else {
+    var canHarvest = function (item) {
+      return block.harvestTools.indexOf(item) >= 0;
+    };
+
+    tools = bot.inventory.slots.filter(canHarvest);
+  }
+
+  var fastest = function (best, tool) {
+    var current = [block.digTime(tool), tool];
+
+    if (best && best[0] <= current) {
+      return best;
+    }
+    return current;
+  };
+
+  var tool = tools.reduce(fastest)[1];
+  var equip = function (tool) {
+    return function (resolve, reject) {
+      bot.equip(tool, "hand", function (error) {
+        if (error) {
+          reject(error);
+        }
+        else {
+          resolve();
+        }
+      });
+    };
+  };
+
+  if (block.digTime(tool) < block.digTime() && tool != bot.entity.heldItem) {
+    return new Promise(equip(tool));
+  }
+  else if (bot.entity.heldItem) {
+    return new Promise(equip(undefined));
+  }
+};
 
 // This digs the point provided
 // This must be called with a this value of the bot.
@@ -19,6 +64,8 @@ const DIG_RANGE = 5;
 //   interrupted: digging interrupted
 var digPoint = function (bot, point) {
   console.log("Digging the point: " + point);
+
+  useBestEquipment(bot, point);
   var block = bot.blockAt(point);
 
   var promise = new Promise(function (resolve, reject) {
