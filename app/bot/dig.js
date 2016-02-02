@@ -9,10 +9,12 @@ var useBestEquipment = function (bot, point) {
   var block = bot.blockAt(point);
   var tool = getFastestToolForBlock(bot, block);
 
+  console.log("I consider " + tool.name + " to be fastest for " + block.name);
+
   if ((! tool) && block.harvestTools) {
     return Promise.reject("No suitable tool");
   }
-  if (block.digTime(tool) < block.digTime()) {
+  if (block.digTime(tool.type) < block.digTime()) {
     return equipTool(bot, tool);
   }
   if (bot.entity.heldItem) {
@@ -52,34 +54,37 @@ var unequipTool = function (bot) {
 };
 
 var getFastestToolForBlock = function (bot, block) {
+  var inventory = bot.inventory.slots.filter(v => v);
   var tools;
 
   if (! block.harvestTools) {
-    tools = bot.inventory.slots;
+    tools = inventory;
   }
   else {
     var canHarvest = function (item) {
-      return item && block.harvestTools[item.type];
+      return block.harvestTools[item.type];
     };
 
-    tools = bot.inventory.slots.filter(canHarvest);
+    tools = inventory.filter(canHarvest);
   }
 
-  var fastest = function (best, tool) {
-    var current = [block.digTime(tool), tool];
+  if (! tools) {
+    return undefined;
+  }
 
-    if (best && best[0] <= current) {
+  var toSpeedToolArray = function (tool) {
+    return [block.digTime(tool.type), tool];
+  };
+  var fastest = function (best, current) {
+    if (best[0] <= current[0]) {
       return best;
     }
     return current;
   };
 
-  var tool = tools.reduce(fastest, undefined);
+  var tool = tools.map(toSpeedToolArray).reduce(fastest);
 
-  if (tool && tool[1]) {
-    return tool[1].type;
-  }
-  return undefined;
+  return tool[1];
 };
 
 // This digs the point provided
