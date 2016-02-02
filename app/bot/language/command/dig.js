@@ -7,7 +7,7 @@ var shapes = {};
 // the square varies in x because it is created around the player
 // the square increases in y because it is created from the feet upwards
 // this creates an array of arrays where each one represents the offset of that point of the square
-shapes.square = [-1, 0, 1].map(x => [0, 1, 2].map(y => [1, x, y])).reduce((a, v) => a.concat(v), []);
+shapes.square = [-1, 0, 1].map(x => [0, 1, 2, 3, 4, 5].map(y => [1, x, y])).reduce((a, v) => a.concat(v), []);
 
 var DigCommand = function (direction, shape) {
   base.AbstractCommand.call(this);
