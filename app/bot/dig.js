@@ -9,8 +9,6 @@ var useBestEquipment = function (bot, point) {
   var block = bot.blockAt(point);
   var tool = getFastestToolForBlock(bot, block);
 
-  console.log("I consider " + tool.name + " to be fastest for " + block.name);
-
   if ((! tool) && block.harvestTools) {
     return Promise.reject("No suitable tool");
   }
