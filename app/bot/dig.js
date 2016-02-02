@@ -13,32 +13,42 @@ var useBestEquipment = function (bot, point) {
     return Promise.reject("No suitable tool");
   }
   if (block.digTime(tool) < block.digTime()) {
-    if (tool != bot.entity.heldItem) {
-      return new Promise(function (resolve, reject) {
-        bot.equip(tool, "hand", function (error) {
-          if (error) {
-            reject(error);
-          }
-          else {
-            resolve();
-          }
-        });
-      });
-    }
+    return equipTool(bot, tool);
   }
-  else if (bot.entity.heldItem) {
-    return new Promise(function (resolve, reject) {
-      bot.unequip("hand", function (error) {
-        if (error) {
-          reject(error);
-        }
-        else {
-          resolve();
-        }
-      });
-    });
+  if (bot.entity.heldItem) {
+    return unequipTool(bot);
   }
   return Promise.resolve();
+};
+
+var equipTool = function (bot, tool) {
+  if (tool === bot.entity.heldItem) {
+    return Promise.resolve();
+  }
+
+  return new Promise(function (resolve, reject) {
+    bot.equip(tool, "hand", function (error) {
+      if (error) {
+        reject(error);
+      }
+      else {
+        resolve();
+      }
+    });
+  });
+};
+
+var unequipTool = function (bot) {
+  return new Promise(function (resolve, reject) {
+    bot.unequip("hand", function (error) {
+      if (error) {
+        reject(error);
+      }
+      else {
+        resolve();
+      }
+    });
+  });
 };
 
 var getFastestToolForBlock = function (bot, block) {
@@ -49,7 +59,7 @@ var getFastestToolForBlock = function (bot, block) {
   }
   else {
     var canHarvest = function (item) {
-      return block.harvestTools[item];
+      return item && block.harvestTools[item.type];
     };
 
     tools = bot.inventory.slots.filter(canHarvest);
@@ -66,7 +76,10 @@ var getFastestToolForBlock = function (bot, block) {
 
   var tool = tools.reduce(fastest, undefined);
 
-  return tool ? tool[1] : undefined;
+  if (tool && tool[1]) {
+    return tool[1].type;
+  }
+  return undefined;
 };
 
 // This digs the point provided
