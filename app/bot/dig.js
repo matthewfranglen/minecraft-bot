@@ -123,8 +123,6 @@ var dig = function (bot, point) {
 };
 
 var digPoint = function (bot, point) {
-  console.log("Digging the point: " + point);
-
   return useBestEquipment(bot, point).then(function () {
     return dig(bot, point);
   });
