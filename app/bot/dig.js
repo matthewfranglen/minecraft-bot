@@ -66,7 +66,7 @@ var getFastestToolForBlock = function (bot, block) {
     tools = inventory.filter(canHarvest);
   }
 
-  if (! tools) {
+  if (tools.length === 0) {
     return undefined;
   }
 
