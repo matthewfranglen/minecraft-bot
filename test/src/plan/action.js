@@ -101,4 +101,17 @@ describe('minecraft-bot plan action', function () {
   it('should have the say method', function () {
     assert(action.say, 'check say method is created');
   });
+
+  it('should call chat when the say method is called', function () {
+    var called = false;
+    var mockBot = {
+      chat: function () {
+        called = true;
+      }
+    };
+
+    action.say(mockBot);
+
+    assert(called, 'check chat method is called');
+  });
 });
