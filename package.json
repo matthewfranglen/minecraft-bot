@@ -44,5 +44,8 @@
     "prepublish": "gulp prepublish",
     "test": "gulp"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "minecraft-data": "^0.19.1"
+  }
 }
