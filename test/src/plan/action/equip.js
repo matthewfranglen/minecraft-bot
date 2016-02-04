@@ -13,7 +13,7 @@ describe('minecraft-bot plan action equip', function () {
       }
     };
 
-    action.equip(mockBot, item.IRON_SHOVEL);
+    equip(mockBot, item.IRON_SHOVEL);
 
     assert(called, 'check equip method is called');
   });
@@ -26,7 +26,7 @@ describe('minecraft-bot plan action equip', function () {
       }
     };
 
-    action.equip(mockBot);
+    equip(mockBot);
 
     assert(called, 'check unequip method is called');
   });
