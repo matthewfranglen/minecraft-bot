@@ -2,6 +2,7 @@
 
 import assert from 'assert';
 import action from '../../../lib/src/plan/action';
+import block from '../../../lib/src/thing/block';
 import item from '../../../lib/src/thing/item';
 
 describe('minecraft-bot plan action', function () {
@@ -96,6 +97,34 @@ describe('minecraft-bot plan action', function () {
 
   it('should have the dig method', function () {
     assert(action.dig, 'check dig method is created');
+  });
+
+  it('should call dig when the dig method is called', function () {
+    var called = false;
+    var mockBot = {
+      entity: {
+        position: {
+          offset: function () {},
+          distanceTo: function () {
+            return 0;
+          }
+        }
+      },
+      blockAt: function () {
+        return block.DIRT;
+      },
+      canDigBlock: function () {
+        return true;
+      },
+      once: function () {},
+      dig: function () {
+        called = true;
+      }
+    };
+
+    action.dig(mockBot);
+
+    assert(called, 'check dig method is called');
   });
 
   it('should have the say method', function () {
