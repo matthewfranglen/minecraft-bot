@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import assert from 'assert';
-import equip from '../../../../lib/src/plan/equip';
+import equip from '../../../../lib/src/plan/action/equip';
 import item from '../../../../lib/src/thing/item';
 
 describe('minecraft-bot plan action equip', function () {

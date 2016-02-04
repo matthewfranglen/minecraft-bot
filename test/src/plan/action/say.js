@@ -2,7 +2,7 @@
 /* jshint esnext: true */
 
 import assert from 'assert';
-import say from '../../../../lib/src/plan/say';
+import say from '../../../../lib/src/plan/action/say';
 
 describe('minecraft-bot plan action say', function () {
   it('should call chat when the say method is called', function () {

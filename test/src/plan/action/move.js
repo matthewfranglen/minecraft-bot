@@ -2,7 +2,7 @@
 /* jshint esnext: true */
 
 import assert from 'assert';
-import move from '../../../../lib/src/plan/move';
+import move from '../../../../lib/src/plan/action/move';
 
 describe('minecraft-bot plan action move', function () {
   it('should call navigate.walk when the move method is called', function () {

@@ -2,7 +2,7 @@
 /* jshint esnext: true */
 
 import assert from 'assert';
-import toss from '../../../../lib/src/plan/toss';
+import toss from '../../../../lib/src/plan/action/toss';
 
 describe('minecraft-bot plan action toss', function () {
   it('should call tossStack when the toss method is called', function () {
