@@ -1,5 +1,6 @@
 var path = require('path');
 var gulp = require('gulp');
+var child_process = require('child_process');
 var eslint = require('gulp-eslint');
 var excludeGitignore = require('gulp-exclude-gitignore');
 var mocha = require('gulp-mocha');
@@ -77,3 +78,11 @@ gulp.task('clean', function () {
 
 gulp.task('prepublish', ['nsp', 'babel']);
 gulp.task('default', ['static', 'test', 'coveralls']);
+
+gulp.task('server', function (callback) {
+  child_process.exec('node dist/index.js', function (error, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    callback(error);
+  });
+});

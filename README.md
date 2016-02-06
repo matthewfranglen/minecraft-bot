@@ -1,6 +1,13 @@
 # minecraft-bot [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
 > Declarative bot for minecraft
 
+## Docker
+
+```sh
+$ docker build -t matthewfranglen/minecraft-bot .
+$ docker run -it --rm --name minecraft-bot matthewfranglen/minecraft-bot
+```
+
 ## Installation
 
 ```sh
@@ -14,6 +21,7 @@ var minecraftBot = require('minecraft-bot');
 
 minecraftBot('Rainbow');
 ```
+
 ## License
 
  © [Matthew Franglen]()
