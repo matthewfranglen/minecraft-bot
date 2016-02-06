@@ -17,7 +17,7 @@ describe('minecraft-bot plan action dig', function () {
         }
       },
       blockAt: function () {
-        return block.DIRT;
+        return block.constant.DIRT;
       },
       canDigBlock: function () {
         return true;

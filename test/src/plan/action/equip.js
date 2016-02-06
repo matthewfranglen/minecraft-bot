@@ -13,7 +13,7 @@ describe('minecraft-bot plan action equip', function () {
       }
     };
 
-    equip(mockBot, item.IRON_SHOVEL);
+    equip(mockBot, item.constant.IRON_SHOVEL);
 
     assert(called, 'check equip method is called');
   });
