@@ -1,6 +1,7 @@
 /* jshint esnext: true */
 
 import assert from 'assert';
+import vec3 from 'vec3';
 import dig from '../../../../lib/src/plan/action/dig';
 import block from '../../../../lib/src/thing/block';
 
@@ -9,12 +10,7 @@ describe('minecraft-bot plan action dig', function () {
     var called = false;
     var mockBot = {
       entity: {
-        position: {
-          offset: function () {},
-          distanceTo: function () {
-            return 0;
-          }
-        }
+        position: vec3(1, 2, 3)
       },
       blockAt: function () {
         return block.constant.DIRT;
@@ -28,7 +24,7 @@ describe('minecraft-bot plan action dig', function () {
       }
     };
 
-    dig(mockBot);
+    dig(mockBot, [1, 0, 0]);
 
     assert(called, 'check dig method is called');
   });

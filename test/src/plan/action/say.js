@@ -1,4 +1,3 @@
-
 /* jshint esnext: true */
 
 import assert from 'assert';
