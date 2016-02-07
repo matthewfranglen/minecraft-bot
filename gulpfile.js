@@ -1,3 +1,5 @@
+/* jshint esnext: true */
+
 var path = require('path');
 var gulp = require('gulp');
 var child_process = require('child_process');
@@ -80,9 +82,13 @@ gulp.task('prepublish', ['nsp', 'babel']);
 gulp.task('default', ['static', 'test', 'coveralls']);
 
 gulp.task('server', function (callback) {
-  child_process.exec('node dist/app.js', function (error, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    callback(error);
+  const server = child_process.spawn('node', ['dist/app.js']);
+
+  server.stdout.pipe(process.stdout);
+  server.stderr.pipe(process.stderr);
+  process.stdin.pipe(server.stdin);
+  server.on('close', (code) => {
+    console.log('child process exited with code ' + code);
+    callback();
   });
 });
