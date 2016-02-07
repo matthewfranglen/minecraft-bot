@@ -6,6 +6,6 @@ WORKDIR /app
 
 RUN npm install -g gulp
 RUN npm install
-RUN gulp prepublish
+RUN gulp babel
 
 CMD ["gulp", "server"]
